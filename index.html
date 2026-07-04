@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>石榴社 — 用匠心做好每一个春日的故事</title>
+  <meta name="description" content="石榴社，精品 Galgame 工作室。代表作《春日羽》— 一部关于暗恋、成长与选择的校园恋爱视觉小说。">
+  <meta name="keywords" content="石榴社, Galgame, 视觉小说, 春日羽, CHUNRIYIU, 校园恋爱, 文字冒险">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Zen+Maru+Gothic:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <meta property="og:title" content="石榴社 — 用匠心做好每一个春日的故事">
+  <meta property="og:description" content="精品 Galgame 工作室。代表作《春日羽》— 校园恋爱视觉小说。">
+  <meta property="og:image" content="assets/cover.jpg">
+  <meta property="og:type" content="website">
+
+  <style>
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body {
+      font-family: 'Noto Sans SC', 'Zen Maru Gothic', sans-serif;
+      background: #0a0010;
+      color: #fff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { cursor: pointer; font-family: inherit; }
+
+    /* ============================================================
+       CSS VARIABLES — 石榴社配色主题
+       配色灵感：石榴红 + 珊瑚粉 + 奶油白 + 春绿色
+       ============================================================ */
+    :root {
+      --coral:    #FF6B6B;   /* 珊瑚红 */
+      --punch:    #E84393;   /* 石榴红紫 */
+      --pink:     #FD79A8;   /* 樱花粉 */
+      --cream:    #FFF5F5;   /* 奶油白 */
+      --mint:     #00D2A0;   /* 春绿 */
+      --amber:    #FFB347;   /* 暖橙 */
+      --glass-bg: rgba(255, 107, 107, 0.03);
+      --glass-border: rgba(255, 107, 107, 0.12);
+      --lg-radius: 28px;
+    }
+
+    /* ============================================================
+       SECTION BACKGROUNDS — 各区域独立背景
+       ============================================================ */
+    .section-bg {
+      position: relative;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: scroll;
+    }
+    .section-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(10,0,16,0.55);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .section-bg > * { position: relative; z-index: 1; }
+
+    .bg-features  { background-image: url('assets/bg_features.jpg'); }
+    .bg-games     { background-image: url('assets/bg_games.jpg'); }
+    .bg-routes    { background-image: url('assets/bg_routes.jpg'); }
+    .bg-about     { background-image: url('assets/bg_about.jpg'); }
+    .bg-footer    { background-image: url('assets/bg_footer.jpg'); }
+
+    /* ============================================================
+       SCROLL PROGRESS
+       ============================================================ */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #FF6B6B, #E84393, #FD79A8, #00D2A0);
+      z-index: 9999;
+      transition: width 0.1s;
+      width: 0%;
+      box-shadow: 0 0 12px rgba(232,67,147,0.5);
+    }
+
+    /* ============================================================
+       LOADING SCREEN — 石榴logo动画
+       ============================================================ */
+    #loader {
+      position: fixed; inset: 0; z-index: 9998;
+      background: #0a0010;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-logo {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 42px; font-weight: 900;
+      background: linear-gradient(135deg, #FF6B6B, #E84393, #FD79A8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: pulse-logo 1.6s ease-in-out infinite;
+      margin-bottom: 10px;
+    }
+    #loader img {
+      animation: pulse-logo 1.6s ease-in-out infinite;
+    }
+    .loader-sub {
+      font-size: 13px; color: rgba(255,255,255,0.4);
+      letter-spacing: 4px; margin-bottom: 40px;
+    }
+    @keyframes pulse-logo {
+      0%,100%{opacity:1;transform:scale(1);}
+      50%{opacity:0.6;transform:scale(0.97);}
+    }
+    .loader-bar { width: 220px; height: 2px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+    .loader-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF6B6B, #E84393);
+      border-radius: 2px;
+      animation: loading 1.8s ease-in-out infinite;
+      width: 0%;
+    }
+    @keyframes loading {
+      0%  {width:0%;margin-left:0;}
+      50% {width:60%;margin-left:20%;}
+      100%{width:0%;margin-left:100%;}
+    }
+
+    /* ============================================================
+       NAVBAR
+       ============================================================ */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.4s ease;
+    }
+    .navbar.scrolled {
+      background: rgba(10,0,16,0.60);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255,107,107,0.1);
+      padding: 10px 48px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 22px; font-weight: 900;
+      cursor: pointer;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(232,67,147,0.4);
+    }
+    .nav-logo-text {
+      background: linear-gradient(135deg, #FD79A8, #FF6B6B);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; gap: 6px; list-style: none; align-items: center; }
+    .nav-links a {
+      color: rgba(255,255,255,0.65);
+      font-size: 14px; font-weight: 400;
+      padding: 8px 18px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+    }
+    .nav-links a:hover { color: #fff; background: rgba(255,107,107,0.15); }
+    .nav-cta {
+      background: linear-gradient(135deg, #FF6B6B, #E84393) !important;
+      color: #fff !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 16px rgba(232,67,147,0.35);
+    }
+    .nav-cta:hover { box-shadow: 0 8px 28px rgba(232,67,147,0.5) !important; transform: translateY(-2px); }
+    .mobile-menu-btn { display: none; background: none; border: none; color: #fff; font-size: 26px; cursor: pointer; padding: 6px; }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,0,16,0.92); backdrop-filter: blur(20px); padding: 20px; border-bottom: 1px solid rgba(255,107,107,0.1); gap: 4px; }
+      .nav-links.open { display: flex; }
+      .mobile-menu-btn { display: block; }
+      .navbar { padding: 14px 20px; }
+      .navbar.scrolled { padding: 10px 20px; }
+    }
+
+    /* ============================================================
+       HERO SECTION
+       ============================================================ */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url('assets/cover.jpg') center center / cover no-repeat;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero > * { position: relative; z-index: 1; }
+    .hero-content { max-width: 860px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 22px; border-radius: 50px;
+      background: rgba(255,107,107,0.12);
+      border: 1px solid rgba(255,107,107,0.3);
+      color: #FF6B6B; font-size: 12px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 28px;
+      animation: fade-up 1s ease-out 0.1s both;
+    }
+    .hero-title {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(52px, 9vw, 100px);
+      font-weight: 900; line-height: 1.1; margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 0%, #FFD6D6 35%, #FD79A8 65%, #FF6B6B 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fade-up 1s ease-out 0.25s both;
+    }
+    .hero-title .accent {
+      background: linear-gradient(135deg, #FF6B6B, #E84393);
+      -webkit-background-clip: text; background-clip: text;
+    }
+    .hero-slogan {
+      font-size: clamp(16px, 2.5vw, 22px);
+      color: rgba(255,255,255,0.55); font-weight: 300;
+      margin-bottom: 16px; line-height: 1.7;
+      animation: fade-up 1s ease-out 0.4s both;
+    }
+    .hero-meta {
+      display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 44px; animation: fade-up 1s ease-out 0.5s both;
+    }
+    .hero-meta-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: rgba(255,255,255,0.45);
+    }
+    .hero-meta-item .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #FD79A8;
+    }
+    .hero-actions {
+      display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+      animation: fade-up 1s ease-out 0.6s both;
+    }
+    .hero-scroll {
+      position: absolute; bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: rgba(255,255,255,0.35); font-size: 11px;
+      animation: bounce-down 2.5s ease-in-out infinite;
+      letter-spacing: 2px;
+    }
+    .hero-scroll-arrow {
+      width: 22px; height: 22px;
+      border-right: 2px solid rgba(255,255,255,0.35);
+      border-bottom: 2px solid rgba(255,255,255,0.35);
+      transform: rotate(45deg);
+    }
+    @keyframes bounce-down {
+      0%,100%{transform:translateX(-50%) translateY(0);opacity:0.35;}
+      50%{transform:translateX(-50%) translateY(10px);opacity:0.7;}
+    }
+    @keyframes fade-up {
+      from{opacity:0;transform:translateY(40px);}
+      to{opacity:1;transform:translateY(0);}
+    }
+
+    /* ============================================================
+       LIQUID GLASS BUTTONS
+       ============================================================ */
+    .lg-btn {
+      position: relative; display: inline-flex;
+      align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 32px; border-radius: 50px; border: none;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; overflow: hidden;
+      background: linear-gradient(135deg, #FF6B6B, #E84393);
+      color: #fff;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 6px 28px rgba(232,67,147,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      will-change: transform; user-select: none;
+      text-decoration: none;
+    }
+    .lg-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .lg-btn:hover {
+      transform: translateY(-4px) scale(1.05) rotate(-1deg);
+      box-shadow: 0 16px 48px rgba(232,67,147,0.55), 0 0 60px rgba(255,107,107,0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .lg-btn:active { transform: translateY(0) scale(0.97); }
+    .lg-btn--outline {
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.3);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      color: #fff;
+    }
+    .lg-btn--outline:hover {
+      background: rgba(255,107,107,0.15);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 30px rgba(255,107,107,0.15);
+      transform: translateY(-4px) scale(1.03);
+    }
+    .lg-btn--green {
+      background: linear-gradient(135deg, #00D2A0, #00B894);
+      box-shadow: 0 6px 28px rgba(0,210,160,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .lg-btn--green:hover {
+      box-shadow: 0 16px 48px rgba(0,210,160,0.55), 0 0 60px rgba(0,210,160,0.25);
+    }
+    .lg-btn--amber {
+      background: linear-gradient(135deg, #FFB347, #FF8C00);
+      box-shadow: 0 6px 28px rgba(255,179,71,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .lg-btn--amber:hover {
+      box-shadow: 0 16px 48px rgba(255,179,71,0.55), 0 0 60px rgba(255,179,71,0.25);
+    }
+
+    /* ============================================================
+       SECTION COMMON
+       ============================================================ */
+    .section { position: relative; z-index: 1; padding: 100px 20px; }
+    .container { max-width: 1140px; margin: 0 auto; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px; border-radius: 50px;
+      background: rgba(255,107,107,0.1);
+      border: 1px solid rgba(255,107,107,0.25);
+      color: #FD79A8; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 2.5px;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(32px, 5vw, 54px);
+      font-weight: 900; margin-bottom: 16px; line-height: 1.2;
+    }
+    .section-desc {
+      font-size: 16px; color: rgba(255,255,255,0.5);
+      max-width: 600px; margin: 0 auto; line-height: 1.8;
+    }
+    .section-header { text-align: center; margin-bottom: 70px; }
+
+    /* ============================================================
+       FEATURE HIGHLIGHTS — 首页亮点
+       ============================================================ */
+    .features-section { padding: 80px 20px 60px; position: relative; z-index: 1; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1140px; margin: 0 auto;
+    }
+    .feature-card {
+      padding: 28px 24px;
+      border-radius: 24px;
+      background: rgba(255,107,107,0.02);
+      border: 1px solid rgba(255,107,107,0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      text-align: center;
+    }
+    .feature-card:hover {
+      background: rgba(255,107,107,0.1);
+      border-color: rgba(255,107,107,0.3);
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(232,67,147,0.12);
+    }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(232,67,147,0.2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin: 0 auto 16px;
+    }
+    .feature-title {
+      font-weight: 700; font-size: 15px; margin-bottom: 8px;
+      color: #FFD6D6;
+    }
+    .feature-desc {
+      font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.7;
+    }
+
+    /* ============================================================
+       GAME CARD — 核心展示组件
+       ============================================================ */
+    .game-card {
+      position: relative; border-radius: 36px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.015);
+      border: 1px solid rgba(255,107,107,0.08);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 12px 48px rgba(0,0,0,0.3);
+      transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+      margin-bottom: 56px;
+    }
+    .game-card:hover {
+      transform: translateY(-12px);
+      border-color: rgba(255,107,107,0.35);
+      box-shadow: 0 28px 80px rgba(232,67,147,0.12), 0 0 60px rgba(255,107,107,0.06);
+    }
+    .game-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(255,107,107,0.03) 100%);
+      pointer-events: none; z-index: 2;
+    }
+    .game-card-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 768px) {
+      .game-card-inner { grid-template-columns: 1fr; }
+      .game-visual { min-height: 280px; }
+    }
+    .game-visual { position: relative; overflow: hidden; }
+    .game-cover {
+      width: 100%; height: 100%; min-height: 420px; object-fit: cover;
+      transition: transform 0.7s ease;
+    }
+    .game-card:hover .game-cover { transform: scale(1.06); }
+    .game-cover-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, transparent 50%, rgba(10,0,16,0.92) 100%);
+    }
+    @media (max-width: 768px) {
+      .game-cover-overlay { background: linear-gradient(to top, rgba(10,0,16,0.95), transparent 60%); }
+    }
+    .game-badge-float {
+      position: absolute; top: 20px; left: 20px; z-index: 3;
+      padding: 6px 16px; border-radius: 50px;
+      background: rgba(10,0,16,0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,107,107,0.4);
+      font-size: 12px; font-weight: 600; color: #FF6B6B;
+    }
+    .game-badge-float.dev {
+      color: #FFB347;
+      border-color: rgba(255,179,71,0.4);
+    }
+    .game-info {
+      padding: 48px 44px;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    @media (max-width: 768px) { .game-info { padding: 28px 24px; } }
+
+    .game-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .game-tag {
+      padding: 4px 14px; border-radius: 50px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.3px;
+    }
+    .tag-genre    { background:rgba(232,67,147,0.18); color:#FD79A8; border:1px solid rgba(232,67,147,0.3); }
+    .tag-platform { background:rgba(0,210,160,0.12);  color:#00D2A0; border:1px solid rgba(0,210,160,0.25); }
+    .tag-pc       { background:rgba(100,100,255,0.12); color:#aaaaff; border:1px solid rgba(100,100,255,0.25); }
+    .tag-android  { background:rgba(0,200,83,0.12); color:#00C853; border:1px solid rgba(0,200,83,0.25); }
+    .tag-released { background:rgba(0,210,160,0.12); color:#00D2A0; border:1px solid rgba(0,210,160,0.25); }
+    .tag-dev      { background:rgba(255,179,71,0.12); color:#FFB347; border:1px solid rgba(255,179,71,0.25); }
+
+    .game-name {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(28px, 4vw, 44px); font-weight: 900;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #fff, #FFD6D6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .game-subtitle {
+      font-size: 13px; color: rgba(255,107,107,0.6);
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .game-desc {
+      color: rgba(255,255,255,0.6); font-size: 14px;
+      line-height: 1.9; margin-bottom: 24px;
+    }
+
+    .game-highlights {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px; margin-bottom: 28px;
+    }
+    .highlight-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5;
+    }
+    .highlight-icon {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,107,107,0.2), rgba(232,67,147,0.15));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+    }
+
+    .download-section { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+
+    .game-meta-row {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      font-size: 12px; color: rgba(255,255,255,0.35);
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .game-meta-row span { display: flex; align-items: center; gap: 5px; }
+
+    /* Screenshots gallery */
+    .screenshot-gallery { padding: 0 44px 44px; }
+    @media (max-width: 768px) { .screenshot-gallery { padding: 0 24px 28px; } }
+    .screenshot-gallery h4 {
+      font-size: 12px; color: rgba(255,255,255,0.35);
+      text-transform: uppercase; letter-spacing: 2.5px;
+      margin-bottom: 14px;
+    }
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .screenshot-item {
+      border-radius: 16px; overflow: hidden;
+      aspect-ratio: 16/9;
+      border: 1px solid rgba(255,255,255,0.07);
+      transition: all 0.3s ease; cursor: pointer;
+      background: rgba(255,255,255,0.03);
+    }
+    .screenshot-item:hover {
+      transform: scale(1.04);
+      border-color: rgba(255,107,107,0.45);
+      box-shadow: 0 10px 30px rgba(232,67,147,0.18);
+    }
+
+    /* 漫画分镜网格 */
+    .manga-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-auto-rows: minmax(140px, auto);
+      gap: 10px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .manga-cell {
+      border-radius: 12px; overflow: hidden;
+      cursor: pointer; position: relative;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.02);
+    }
+    .manga-cell:hover {
+      transform: scale(1.03);
+      border-color: rgba(255,107,107,0.4);
+      z-index: 2;
+    }
+    .manga-cell img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+    }
+    .manga-cell-lg { grid-column: span 1; grid-row: span 2; }
+    .manga-cell-md { grid-column: span 1; grid-row: span 1; }
+    .manga-cell-sm { grid-column: span 1; grid-row: span 1; }
+    .manga-cell-wide { grid-column: span 2; grid-row: span 1; }
+    .manga-cell-square { grid-column: span 1; grid-row: span 1; }
+    .manga-cell-double { grid-column: span 2; grid-row: span 1; }
+    .manga-cell-portrait { aspect-ratio: auto; }
+
+    @media (max-width: 768px) {
+      .manga-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .manga-cell-lg { grid-column: span 2; grid-row: span 1; }
+      .manga-cell-wide { grid-column: span 2; }
+      .manga-cell-double { grid-column: span 2; }
+    }
+    .screenshot-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.2); font-size: 12px;
+    }
+    .screenshot-placeholder-icon { font-size: 28px; opacity: 0.5; }
+
+    /* ============================================================
+       UPCOMING GAME CARD
+       ============================================================ */
+    .upcoming-card {
+      border-style: dashed;
+      border-color: rgba(255,179,71,0.25);
+      background: rgba(255,179,71,0.02);
+    }
+    .upcoming-card:hover {
+      border-color: rgba(255,179,71,0.45);
+    }
+    .upcoming-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,179,71,0.03) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       ABOUT SECTION
+       ============================================================ */
+    .about-section { padding: 100px 20px; }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 70px; align-items: center;
+      max-width: 1140px; margin: 60px auto 0;
+    }
+    @media (max-width: 900px) { .about-grid { grid-template-columns: 1fr; gap: 40px; } }
+    .about-visual { position: relative; }
+    .about-card {
+      border-radius: 28px; overflow: hidden;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(232,67,147,0.05));
+      border: 1px solid rgba(255,107,107,0.15);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 40px;
+    }
+    .about-card-logo { width: 100px; height: 100px; margin-bottom: 16px; border-radius: 20px; box-shadow: 0 8px 32px rgba(232,67,147,0.5); }
+    .about-card-name {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 28px; font-weight: 900;
+      background: linear-gradient(135deg, #FF6B6B, #FD79A8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 8px;
+    }
+    .about-card-sub {
+      font-size: 13px; color: rgba(255,255,255,0.4);
+      letter-spacing: 3px; text-transform: uppercase;
+    }
+    .about-card-tags {
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+      margin-top: 20px;
+    }
+    .about-card-tag {
+      padding: 4px 12px; border-radius: 50px;
+      font-size: 11px; background: rgba(255,107,107,0.1);
+      border: 1px solid rgba(255,107,107,0.2);
+      color: #FD79A8;
+    }
+    .about-text h3 {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 28px; font-weight: 700; margin-bottom: 18px;
+      background: linear-gradient(135deg, #FF6B6B, #E84393);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .about-text p {
+      color: rgba(255,255,255,0.58); font-size: 15px;
+      line-height: 1.9; margin-bottom: 16px;
+    }
+    .about-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px; margin: 28px 0;
+    }
+    .stat-item {
+      text-align: center; padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,107,107,0.05);
+      border: 1px solid rgba(255,107,107,0.1);
+    }
+    .stat-number {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 28px; font-weight: 900;
+      color: #FF6B6B; margin-bottom: 4px;
+    }
+    .stat-label { font-size: 12px; color: rgba(255,255,255,0.4); }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .footer {
+      position: relative; z-index: 1;
+      padding: 60px 20px 36px;
+      border-top: 1px solid rgba(255,107,107,0.08);
+    }
+    .footer-inner { max-width: 1140px; margin: 0 auto; }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      gap: 60px; margin-bottom: 48px;
+    }
+    @media (max-width: 768px) { .footer-top { grid-template-columns: 1fr; gap: 32px; } }
+    .footer-brand {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 24px; font-weight: 900;
+      background: linear-gradient(135deg, #FF6B6B, #FD79A8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 12px;
+    }
+    .footer-brand-desc {
+      color: rgba(255,255,255,0.35); font-size: 14px;
+      line-height: 1.7; margin-bottom: 16px;
+    }
+    .social-links { display: flex; gap: 10px; flex-wrap: wrap; }
+    .social-link {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.15);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 18px;
+      transition: all 0.3s ease;
+    }
+    .social-link:hover {
+      background: rgba(255,107,107,0.25);
+      border-color: rgba(255,107,107,0.45);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(232,67,147,0.2);
+    }
+    .footer-col h4 {
+      font-size: 12px; text-transform: uppercase;
+      letter-spacing: 2.5px; color: rgba(255,255,255,0.4);
+      margin-bottom: 16px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      color: rgba(255,255,255,0.45); text-decoration: none;
+      font-size: 14px; transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #FF6B6B; }
+    .footer-links a.disabled { pointer-events: none; opacity: 0.4; }
+    .footer-bottom {
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 8px;
+    }
+    .footer-bottom p { color: rgba(255,255,255,0.25); font-size: 13px; }
+
+    /* ============================================================
+       BACK TO TOP
+       ============================================================ */
+    .back-to-top {
+      position: fixed; bottom: 32px; right: 32px;
+      width: 48px; height: 48px; border-radius: 16px;
+      background: linear-gradient(135deg, #FF6B6B, #E84393);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 90;
+      opacity: 0; transform: translateY(20px);
+      transition: all 0.3s ease;
+      font-size: 20px; color: #fff;
+      box-shadow: 0 6px 24px rgba(232,67,147,0.4);
+    }
+    .back-to-top.visible { opacity: 1; transform: translateY(0); }
+    .back-to-top:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(232,67,147,0.55); }
+
+    /* ============================================================
+       REVEAL ANIMATIONS
+       ============================================================ */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ============================================================
+       LIGHTBOX / MODAL
+       ============================================================ */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9990;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .modal-content img { max-width: 100%; max-height: 85vh; display: block; }
+    .modal-close {
+      position: absolute; top: 20px; right: 20px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* ============================================================
+       SPECIAL SECTIONS
+       ============================================================ */
+    .divider {
+      max-width: 1140px; margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,107,107,0.2), transparent);
+      margin-bottom: 0;
+    }
+
+    /* Coming soon placeholder card */
+    .placeholder-img {
+      width: 100%; height: 100%; min-height: 420px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: linear-gradient(135deg, rgba(255,179,71,0.05), rgba(255,107,107,0.03));
+      gap: 12px;
+    }
+    .placeholder-img-icon { font-size: 56px; opacity: 0.4; }
+    .placeholder-img-text { font-size: 14px; color: rgba(255,255,255,0.25); }
+  </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loader">
+  <img src="assets/loader-logo.png" alt="石榴社" style="width:120px;height:120px;margin-bottom:16px;border-radius:20px;box-shadow:0 8px 32px rgba(232,67,147,0.5);">
+  <div class="loader-sub">石榴社 | GAME STUDIO</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Navbar -->
+<nav class="navbar" id="navbar">
+  <a href="#" class="nav-logo">
+    <img src="assets/nav-logo.png" alt="石榴社" class="nav-logo-icon">
+    <span class="nav-logo-text">石榴社</span>
+  </a>
+  <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">☰</button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero">首页</a></li>
+    <li><a href="#games">游戏作品</a></li>
+    <li><a href="#characters">登场角色</a></li>
+    <li><a href="#routes">剧情路线</a></li>
+    <li><a href="#about">关于我们</a></li>
+    <li><a href="#contact">联系方式</a></li>
+    <li><a href="#games" class="nav-cta">🚀 下载游戏</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">✨ 精品视觉小说工作室</div>
+    <h1 class="hero-title">
+      用匠心<br>
+      做好每一个<span class="accent">春日</span>的故事
+    </h1>
+    <p class="hero-slogan">
+      石榴社 — 独立 Galgame 开发团队<br>
+      每一个故事，都值得被温柔以待
+    </p>
+    <div class="hero-meta">
+      <span class="hero-meta-item"><span class="dot"></span>全年龄向</span>
+      <span class="hero-meta-item"><span class="dot"></span>中文叙事</span>
+      <span class="hero-meta-item"><span class="dot"></span>用心制作</span>
+      <span class="hero-meta-item"><span class="dot"></span>持续更新</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#games" class="lg-btn">🎮 探索游戏</a>
+      <a href="#about" class="lg-btn lg-btn--outline">💬 了解我们</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>向下滑动</span>
+    <div class="hero-scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section section-bg bg-features" id="features">
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">📖</div>
+      <div class="feature-title">三条剧情线路</div>
+      <div class="feature-desc">柳羽线·堕落线·晨珍线，每条线都是不同的故事走向</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🎙️</div>
+      <div class="feature-title">全中文配音</div>
+      <div class="feature-desc">主要角色全程配音，沉浸式校园日常体验</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">⚖️</div>
+      <div class="feature-title">审问系统</div>
+      <div class="feature-desc">5轮对话抉择，影响路线走向与最终结局</div>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">📕</div>
+      <div class="feature-title">后日谈系统</div>
+      <div class="feature-desc">通关后解锁各角色专属后日谈，延续故事的温度</div>
+    </div>
+  </div>
+</section>
+
+<!-- GAMES -->
+<section class="section section-bg bg-games" id="games">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">🎮 Our Games</div>
+      <h2 class="section-title">游戏作品</h2>
+      <p class="section-desc">每一款游戏都是我们用心打磨的心血之作，期待与你相遇在这个故事里。</p>
+    </div>
+
+    <!-- ===== GAME 1: 春日羽 ===== -->
+    <div class="game-card reveal" id="game1">
+      <div class="game-card-inner">
+        <div class="game-visual">
+          <img class="game-cover" src="assets/cover.jpg" alt="春日羽封面" style="width:100%;height:100%;min-height:420px;object-fit:cover;">
+          <div class="game-cover-overlay"></div>
+          <div class="game-badge-float">v1.0.0 已发布</div>
+        </div>
+        <div class="game-info">
+          <div class="game-tags">
+            <span class="game-tag tag-genre">校园 · 恋爱</span>
+            <span class="game-tag tag-genre">视觉小说</span>
+            <span class="game-tag tag-platform">Windows</span>
+            <span class="game-tag tag-android">Android</span>
+            <span class="game-tag tag-released">已发布</span>
+          </div>
+          <h3 class="game-name">春日羽</h3>
+          <div class="game-subtitle">CHUNRIYIU</div>
+          <p class="game-desc">
+            高三学生世崎的校园日常。一次偶然的事件，让他与初中同学柳羽重新产生了交集。在兄弟的起哄、闺蜜的审问和班主任的盯防中，他小心翼翼地靠近那个14班的女生。与此同时，同桌晨珍和好友贝利亚各自藏着心事……<br><br>
+            这是一个关于暗恋、成长与选择的故事。三条路线，三种结局——你能否守护住最重要的感情？
+          </p>
+          <div class="game-highlights">
+            <div class="highlight-item">
+              <span class="highlight-icon">🌸</span>
+              <span>三条独立剧情线（柳羽/堕落/晨珍）</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">🎙️</span>
+              <span>主要角色全中文配音</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">⚖️</span>
+              <span>审问系统 — 5轮对话决定路线</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">📕</span>
+              <span>后日谈系统 — 通关解锁角色结局</span>
+            </div>
+          </div>
+          <div class="download-section">
+            <a href="downloads/CHUNRIYIU-1.0.0-win.zip" class="lg-btn" title="下载 Windows 版">
+              💻 Windows 版下载
+            </a>
+            <a href="downloads/CHUNRIYIU-1.0.0-android.apk" class="lg-btn lg-btn--green" title="下载 Android 版">
+              📱 Android 版下载
+            </a>
+            <a href="web/index.html" class="lg-btn lg-btn--green" target="_blank" title="在线试玩网页版" style="background:linear-gradient(135deg,#00D2A0,#00B894);">
+              ▶️ 在线试玩
+            </a>
+            <a href="https://ifdian.net/a/chunrilu" class="lg-btn lg-btn--amber" target="_blank" rel="noopener" title="爱发电支持我们" style="background:linear-gradient(135deg,#FFB347,#FF8C00);">
+              ⚡ 爱发电支持
+            </a>
+          </div>
+          <div class="game-meta-row">
+            <span>📦 约300MB（Win）/ 290MB（Android）</span>
+            <span>🌐 简体中文 · 全年龄</span>
+            <span>📅 2026年6月发布</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="screenshot-gallery">
+        <h4 style="font-size:18px;font-weight:700;color:#FFD6D6;margin-bottom:20px;text-align:center;">📸 游戏截图</h4>
+        <div class="manga-grid">
+          <div class="manga-cell manga-cell-wide" onclick="openModalImg('assets/sc1.jpg')"><img src="assets/sc1.jpg" alt="截图1" loading="lazy"></div>
+          <div class="manga-cell manga-cell-sm" onclick="openModalImg('assets/sc2.jpg')"><img src="assets/sc2.jpg" alt="截图2" loading="lazy"></div>
+          <div class="manga-cell manga-cell-sm" onclick="openModalImg('assets/sc3.jpg')"><img src="assets/sc3.jpg" alt="截图3" loading="lazy"></div>
+          <div class="manga-cell manga-cell-sm" onclick="openModalImg('assets/sc4.jpg')"><img src="assets/sc4.jpg" alt="截图4" loading="lazy"></div>
+          <div class="manga-cell manga-cell-wide" onclick="openModalImg('assets/sc5.jpg')"><img src="assets/sc5.jpg" alt="截图5" loading="lazy"></div>
+          <div class="manga-cell manga-cell-sm" onclick="openModalImg('assets/sc6.jpg')"><img src="assets/sc6.jpg" alt="截图6" loading="lazy"></div>
+          <div class="manga-cell manga-cell-wide" onclick="openModalImg('assets/sc7.jpg')"><img src="assets/sc7.jpg" alt="截图7" loading="lazy"></div>
+          <div class="manga-cell manga-cell-wide" onclick="openModalImg('assets/sc8.jpg')"><img src="assets/sc8.jpg" alt="截图8" loading="lazy"></div>
+          <div class="manga-cell manga-cell-wide" onclick="openModalImg('assets/sc9.jpg')"><img src="assets/sc9.jpg" alt="截图9" loading="lazy"></div>
+          <div class="manga-cell manga-cell-wide" onclick="openModalImg('assets/sc10.jpg')"><img src="assets/sc10.jpg" alt="截图10" loading="lazy"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== GAME 2: 春日录（待开发）===== -->
+    <div class="game-card upcoming-card reveal" id="game2">
+      <div class="upcoming-overlay"></div>
+      <div class="game-card-inner">
+        <div class="game-visual">
+          <div class="placeholder-img">
+            <span class="placeholder-img-icon" style="font-size:72px;">🔮</span>
+            <div style="font-family:'Zen Maru Gothic',sans-serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,#FFB347,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">春日录</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:3px;">待开发</div>
+            <div style="margin-top:12px;padding:6px 18px;border-radius:50px;background:rgba(255,179,71,0.1);border:1px solid rgba(255,179,71,0.25);font-size:11px;color:#FFB347;font-weight:600;">🔔 敬请期待</div>
+          </div>
+          <div class="game-cover-overlay"></div>
+          <div class="game-badge-float dev">待开发</div>
+        </div>
+        <div class="game-info">
+          <div class="game-tags">
+            <span class="game-tag tag-genre">超现实 · 校园</span>
+            <span class="game-tag tag-genre">恋爱</span>
+            <span class="game-tag tag-dev">待定</span>
+          </div>
+          <h3 class="game-name">春日录</h3>
+          <p class="game-desc">
+            📝 游戏详情正在规划中……<br><br>
+            敬请期待石榴社的下一部作品。一个全新的故事，即将展开。
+          </p>
+          <div class="game-highlights">
+            <div class="highlight-item">
+              <span class="highlight-icon">✨</span>
+              <span>全新故事篇章</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">🌟</span>
+              <span>石榴社第二部作品</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">🎯</span>
+              <span>更多精彩剧情</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">💫</span>
+              <span>敬请期待</span>
+            </div>
+          </div>
+          <div class="download-section">
+            <a href="#" class="lg-btn lg-btn--amber disabled">
+              🔔 关注更新
+            </a>
+            <a href="#contact" class="lg-btn lg-btn--outline">
+              📬 订阅通知
+            </a>
+          </div>
+          <div class="game-meta-row">
+            <span>📅 发布时间：未定</span>
+            <span>🌐 平台：待定</span>
+            <span>💬 有消息第一时间通知</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CHARACTERS -->
+<section class="section section-bg bg-features" id="characters">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">👥 Characters</div>
+      <h2 class="section-title">登场角色</h2>
+      <p class="section-desc">这些鲜活的灵魂，共同编织了《春日羽》的故事。</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;max-width:1140px;margin:0 auto;">
+      <div class="feature-card reveal" style="text-align:left;padding:32px 28px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(232,67,147,0.2),rgba(255,107,107,0.2));display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px;">😎</div>
+        <div style="font-weight:700;font-size:16px;color:#FFD6D6;margin-bottom:4px;">世崎</div>
+        <div style="font-size:11px;color:rgba(255,107,107,0.5);letter-spacing:1.5px;margin-bottom:12px;">CV · 主角</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8;">高三（10）班大理班学生。成绩中游，话多且奇怪，擅长卡点和借钱。暗恋14班的柳羽，每天都在连廊上演「偶遇」戏码。</div>
+      </div>
+
+      <div class="feature-card reveal" style="text-align:left;padding:32px 28px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(0,210,160,0.2),rgba(0,200,83,0.2));display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px;">🌸</div>
+        <div style="font-weight:700;font-size:16px;color:#00D2A0;margin-bottom:4px;">柳羽</div>
+        <div style="font-size:11px;color:rgba(0,210,160,0.5);letter-spacing:1.5px;margin-bottom:12px;">CV · 女主角</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8;">高二（14）班小理班学生。世崎的初中同学，性格温柔内敛，喜欢在窗台边看书。注意到有人经常「路过」14班门口。</div>
+      </div>
+
+      <div class="feature-card reveal" style="text-align:left;padding:32px 28px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(255,179,71,0.2),rgba(255,140,0,0.2));display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px;">🔥</div>
+        <div style="font-weight:700;font-size:16px;color:#FFB347;margin-bottom:4px;">晨珍</div>
+        <div style="font-size:11px;color:rgba(255,179,71,0.5);letter-spacing:1.5px;margin-bottom:12px;">CV · 邻座</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8;">世崎的同桌，性格泼辣直率，号称「人形测谎仪」。是审问系统的核心执行者，5轮审问中有3轮由她发起。</div>
+      </div>
+
+      <div class="feature-card reveal" style="text-align:left;padding:32px 28px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(100,100,255,0.2),rgba(170,170,255,0.2));display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:16px;">📚</div>
+        <div style="font-weight:700;font-size:16px;color:#aaaaff;margin-bottom:4px;">贝利亚</div>
+        <div style="font-size:11px;color:rgba(100,100,255,0.5);letter-spacing:1.5px;margin-bottom:12px;">CV · 学霸</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.8;">世崎的学霸同桌，脊背永远挺得笔直。话不多但总是默默地照顾人，关键时刻会递上饭卡。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTES -->
+<section class="section section-bg bg-routes" id="routes">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">🎯 Routes</div>
+      <h2 class="section-title">剧情路线</h2>
+      <p class="section-desc">你的每一个选择，都将走向不同的结局。</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1140px;margin:0 auto;">
+      <!-- 柳羽线 -->
+      <div class="game-card reveal" style="margin:0;border-color:rgba(0,210,160,0.25);">
+        <div class="game-card-inner" style="grid-template-columns:1fr;">
+          <div class="game-visual" style="min-height:100px;padding:40px 32px;text-align:center;">
+            <div style="font-size:56px;margin-bottom:8px;">🌸</div>
+            <div style="font-family:'Zen Maru Gothic',sans-serif;font-size:24px;font-weight:900;background:linear-gradient(135deg,#00D2A0,#00B894);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">柳羽线</div>
+            <div style="font-size:12px;color:rgba(0,210,160,0.6);margin-bottom:16px;">True End 线路</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.8;text-align:left;padding:0 12px;">
+              全程守口如瓶，在审问系统中做出正确选择，运动会告白成功。在一起的第一个冬天，初雪见证了两人的约定。
+            </div>
+            <div style="margin-top:18px;padding:12px 20px;border-radius:16px;background:rgba(0,210,160,0.06);border:1px solid rgba(0,210,160,0.15);text-align:left;">
+              <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:6px;">🏆 获得成就</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(0,210,160,0.12);border:1px solid rgba(0,210,160,0.2);font-size:11px;color:#00D2A0;">运动会告白</span>
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(0,210,160,0.12);border:1px solid rgba(0,210,160,0.2);font-size:11px;color:#00D2A0;">初雪约定</span>
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(0,210,160,0.12);border:1px solid rgba(0,210,160,0.2);font-size:11px;color:#00D2A0;">后日谈解锁</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 堕落线 -->
+      <div class="game-card reveal" style="margin:0;border-color:rgba(232,67,147,0.25);">
+        <div class="game-card-inner" style="grid-template-columns:1fr;">
+          <div class="game-visual" style="min-height:100px;padding:40px 32px;text-align:center;">
+            <div style="font-size:56px;margin-bottom:8px;">🌪️</div>
+            <div style="font-family:'Zen Maru Gothic',sans-serif;font-size:24px;font-weight:900;background:linear-gradient(135deg,#E84393,#FF6B6B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">堕落线</div>
+            <div style="font-size:12px;color:rgba(232,67,147,0.6);margin-bottom:16px;">Bad End 线路</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.8;text-align:left;padding:0 12px;">
+              在审问中暴露心意，情书事件被传开。运动会跑道尽头，大弟吟诗一一致这位还没开始就已结束的勇士。
+            </div>
+            <div style="margin-top:18px;padding:12px 20px;border-radius:16px;background:rgba(232,67,147,0.06);border:1px solid rgba(232,67,147,0.15);text-align:left;">
+              <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:6px;">🏆 获得成就</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(232,67,147,0.12);border:1px solid rgba(232,67,147,0.2);font-size:11px;color:#E84393;">情书事件</span>
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(232,67,147,0.12);border:1px solid rgba(232,67,147,0.2);font-size:11px;color:#E84393;">跑道尽头</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 晨珍线 -->
+      <div class="game-card reveal" style="margin:0;border-color:rgba(255,179,71,0.25);">
+        <div class="game-card-inner" style="grid-template-columns:1fr;">
+          <div class="game-visual" style="min-height:100px;padding:40px 32px;text-align:center;">
+            <div style="font-size:56px;margin-bottom:8px;">🔥</div>
+            <div style="font-family:'Zen Maru Gothic',sans-serif;font-size:24px;font-weight:900;background:linear-gradient(135deg,#FFB347,#FF8C00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">晨珍线</div>
+            <div style="font-size:12px;color:rgba(255,179,71,0.6);margin-bottom:16px;">隐藏线路</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.8;text-align:left;padding:0 12px;">
+              「人形测谎仪」晨珍的专属路线。当目光从14班的窗台转向身边的座位时，一段不同的故事即将展开。
+            </div>
+            <div style="margin-top:18px;padding:12px 20px;border-radius:16px;background:rgba(255,179,71,0.06);border:1px solid rgba(255,179,71,0.15);text-align:left;">
+              <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:6px;">🏆 获得成就</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(255,179,71,0.12);border:1px solid rgba(255,179,71,0.2);font-size:11px;color:#FFB347;">隐藏路线</span>
+                <span style="padding:2px 10px;border-radius:50px;background:rgba(255,179,71,0.12);border:1px solid rgba(255,179,71,0.2);font-size:11px;color:#FFB347;">特别结局</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section section-bg bg-about" id="about">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label">💜 About Us</div>
+      <h2 class="section-title">关于石榴社</h2>
+      <p class="section-desc">我们相信，每一个精心编织的故事，都能在某个人的心里留下温暖的痕迹。</p>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-visual reveal">
+        <div class="about-card">
+          <img src="assets/loader-logo.png" alt="石榴社" class="about-card-logo">
+          <div class="about-card-name">石榴社</div>
+          <div class="about-card-sub">GAME STUDIO</div>
+          <div class="about-card-tags">
+            <span class="about-card-tag">视觉小说</span>
+            <span class="about-card-tag">校园恋爱</span>
+            <span class="about-card-tag">中文叙事</span>
+            <span class="about-card-tag">全年龄</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-text reveal">
+        <h3>用故事，连接每一个春日 🌸</h3>
+        <p>
+          石榴社是一个专注于精品 Galgame 开发的独立工作室。我们相信好的故事有改变人心的力量，也相信用心制作的作品终会被看见。
+        </p>
+        <p>
+          我们的第一部作品《春日羽》是一部校园恋爱视觉小说，讲述关于暗恋、成长与选择的故事。从剧本到美术，从音乐到配音，每一步都由我们亲手打磨。
+        </p>
+
+        <div class="about-stats">
+          <div class="stat-item">
+            <div class="stat-number">1</div>
+            <div class="stat-label">部已发布作品</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">3</div>
+            <div class="stat-label">条剧情线路</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">2</div>
+            <div class="stat-label">部未来计划</div>
+          </div>
+        </div>
+
+        <p style="font-size:13px;color:rgba(255,255,255,0.35);font-style:italic;">
+          「每一段故事，都值得被温柔以待。」
+        </p>
+
+        <div class="download-section" style="margin-top:8px;">
+          <a href="#games" class="lg-btn lg-btn--outline">🎮 体验《春日羽》</a>
+          <a href="#contact" class="lg-btn lg-btn--outline">📬 联系我们</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer section-bg bg-footer" id="contact">
+  <div class="footer-inner container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">🌸 石榴社</div>
+        <p class="footer-brand-desc">
+          专注于精品 Galgame 开发的独立工作室。<br>
+          用匠心做好每一个春日的故事。<br>
+          每一部作品，都是我们想讲给你听的故事。
+        </p>
+        <div class="social-links">
+          <a href="https://www.douyin.com/search/Deowen" class="social-link" title="抖音" target="_blank" rel="noopener">🎵</a>
+          <a href="https://qm.qq.com/q/640773756" class="social-link" title="QQ群" target="_blank" rel="noopener">💬</a>
+          <a href="mailto:szhbdg@outlook.com" class="social-link" title="邮箱">📧</a>
+          <a href="https://ifdian.net/a/chunrilu" class="social-link" title="爱发电" target="_blank" rel="noopener">⚡</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>游戏作品</h4>
+        <ul class="footer-links">
+          <li><a href="#game1">🌸 春日羽</a></li>
+          <li><a href="#game2">🔮 春日录（待开发）</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>联系方式</h4>
+        <ul class="footer-links">
+          <li><a href="https://www.douyin.com/search/Deowen" target="_blank" rel="noopener">🎵 抖音 @Deowen</a></li>
+          <li><a href="https://qm.qq.com/q/640773756" target="_blank" rel="noopener">💬 QQ群：640773756</a></li>
+          <li><a href="https://ifdian.net/a/chunrilu" target="_blank" rel="noopener">⚡ 爱发电：支持我们</a></li>
+          <li><a href="mailto:szhbdg@outlook.com">📧 szhbdg@outlook.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 石榴社. All rights reserved. 用 ❤️ 打造</p>
+      <p style="font-size:12px;opacity:0.4;">Made with 🌸</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Modal for screenshots -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <button class="modal-close" onclick="closeModal()">✕</button>
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT — 交互动画引擎
+     ============================================================ -->
+<script>
+/* ---- Scroll handlers ---- */
+function updateScrollProgress() {
+  const t = document.documentElement.scrollTop;
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('scrollProgress').style.width = (t / h * 100) + '%';
+}
+function updateNavbar() {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+}
+function updateBackToTop() {
+  document.getElementById('backToTop').classList.toggle('visible', window.scrollY > 600);
+}
+
+/* ---- Reveal on scroll ---- */
+function setupReveal() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+}
+
+/* ---- Liquid Glass hover effect ---- */
+function setupLiquidGlassHover() {
+  document.querySelectorAll('.game-card, .feature-card, .social-link, .lg-btn').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const dx = (e.clientX - r.left - r.width/2) / r.width;
+      const dy = (e.clientY - r.top - r.height/2) / r.height;
+      el.style.transform = `perspective(800px) rotateX(${dy*-5}deg) rotateY(${dx*5}deg)${el.classList.contains('game-card')?' translateY(-12px)':' scale(1.03)'}`;
+    });
+    el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+  });
+}
+
+/* ---- Modal ---- */
+function openModal(el) {
+  const content = el.querySelector('img') ? el.querySelector('img').src : null;
+  showModal(content);
+}
+function openModalImg(url) {
+  showModal(url);
+}
+function showModal(url) {
+  const modal = document.getElementById('modalOverlay');
+  const container = document.getElementById('modalContent');
+  if (url) {
+    container.innerHTML = `<img src="${url}" alt="截图" style="border-radius:12px;max-width:90vw;max-height:80vh;object-fit:contain;">`;
+  } else {
+    container.innerHTML = `<div style="padding:60px;text-align:center;color:rgba(255,255,255,0.4);border-radius:20px;background:rgba(10,0,16,0.95);border:1px solid rgba(255,107,107,0.1);min-width:300px;">
+      <div style="font-size:48px;margin-bottom:12px;">🎮</div>
+      <div>截图待上传</div>
+      <div style="font-size:12px;margin-top:8px;color:rgba(255,255,255,0.25);">将截图发给助手替换</div>
+    </div>`;
+  }
+  modal.classList.add('active');
+}
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalOverlay') || e.currentTarget.classList.contains('modal-close')) {
+    document.getElementById('modalOverlay').classList.remove('active');
+  }
+}
+
+/* ---- Mobile menu ---- */
+function toggleMobileMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+
+/* ---- Smooth anchor ---- */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+/* ---- Init ---- */
+window.addEventListener('scroll', () => {
+  updateScrollProgress(); updateNavbar(); updateBackToTop();
+}, { passive: true });
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 1400);
+  setupReveal();
+  setupLiquidGlassHover();
+});
+</script>
+</body>
+</html>
